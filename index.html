@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Questão 1</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style scoped>
+        .v-input--selection-controls {
+            margin-top: 0px;
+            padding-top: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <v-app id="inspire">
+            <v-container>
+                <v-layout row wrap class="justify-center ma-5">
+
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-text-field v-model="pessoa.nome" @keyup="validar" label="Nome" outlined></v-text-field>
+                    </v-flex>
+
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-text-field v-model="pessoa.senha" type="password" @keyup="validar" label="Senha" outlined></v-text-field>
+                    </v-flex>
+
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-radio-group d-flex v-model="pessoa.genero" @keyup="validar">
+                            <v-radio value="H" label="Homem"></v-radio>
+                            <v-radio value="M" label="Mulher"></v-radio>
+                          </v-radio-group>
+                    </v-flex>
+
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-select v-model="pessoa.oportunidade" @keyup="validar" :items="oportunidades" label="Oportunidade" outlined></v-select>
+                    </v-flex>
+
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-textarea v-model="pessoa.descricao" @keyup="validar" label="Descrição" outlined></v-textarea>
+                    </v-flex>
+                    
+                    <v-flex d-flex xs12 sm12 md6 class="ma-1">
+                        <v-checkbox v-model="pessoa.possuiD" label="Possuo deficiência" class="mr-5"></v-checkbox>
+                        <v-checkbox v-model="pessoa.possuiV" label="Possuo veiculo"></v-checkbox>
+                    </v-flex>
+                    
+                    <v-flex d-flex xs12 sm12 md6 class="ma-5 justify-center">
+                        <span class="aviso">{{aviso}}</span>
+                    </v-flex>
+                    
+                    <v-flex d-flex xs12 sm12 md6 class="ma-5 justify-center">
+                        <v-btn v-if="this.aviso == 'Campos preenchidos!'" 
+                        color="primary" class="mr-5" @click="confirmacao">
+                            Cadastrar
+                        </v-btn>
+                        <v-btn color="primary" class="" @click="resetar">
+                            Resetar
+                        </v-btn>
+                    </v-flex>
+
+                </v-layout>
+
+                    <v-dialog v-model="dialog" width="700">
+                        <v-card>
+                            <v-layout column wrap class="pt-8 pr-8 pl-8">
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Nome: {{pessoa.nome}}</span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Senha: {{pessoa.senha}}</span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Genero: <span v-if="pessoa.genero == 'M'">Mulher</span>
+                                    <span v-if="pessoa.genero == 'H'">Homem</span></span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Descrição: {{pessoa.descricao}}</span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Oportunidade: {{pessoa.oportunidade}}</span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Possui deficiência: <span  v-if="pessoa.possuiD == true">Sim</span>
+                                    <span  v-if="pessoa.possuiD == false">Nao</span></span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Possui veiculo: <span  v-if="pessoa.possuiV == true">Sim</span>
+                                    <span  v-if="pessoa.possuiV == false">Nao</span></span>
+                                </v-flex>
+
+                                <v-flex v-if="validacao == false || validacao == true" xs12 sm12 md12 class="ma-4">
+                                    <span v-if="validacao == false" style="color: red;">Nao validado</span>
+                                    <span v-if="validacao == true" style="color: green;">Validado</span>
+                                </v-flex>
+                            </v-layout>
+                            <v-card-actions>
+                            <v-btn color="primary" class="ma-5" text @click="confirmar">
+                                Confirmar
+                            </v-btn>
+                            <v-btn color="primary" class="ma-5" text @click="dialog = false">
+                                Fechar
+                            </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+
+                    <v-dialog v-model="dialogFinal" width="700">
+                        <v-card>
+                            <v-layout column wrap class="pt-8 pr-8 pl-8">
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span v-if="validacao == true" style="color: green;">Validado</span>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12 class="ma-4">
+                                    <span>Você esta logado e suas informações foram atualizadas!</span>
+                                </v-flex>
+                            </v-layout>
+                            <v-card-actions>
+                            <v-btn color="primary" class="ma-5" text @click="dialogFinalF">
+                                OK
+                            </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    
+            </v-container>
+        </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

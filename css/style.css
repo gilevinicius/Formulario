@@ -1,0 +1,10 @@
+.aviso {
+    color: #fff;
+    background-color: red;
+    padding: 10px 30px;
+    border-radius: 10px;
+}
+
+.aviso2 {
+    background-color: green;
+}
